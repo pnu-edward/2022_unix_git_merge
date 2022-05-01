@@ -27,3 +27,23 @@ $(BUILD)/%.o: %.c
 clean:
 	rm -f *.o calc
 	rm -rf build
+
+
+define test_case
+	if [ "$(shell echo '$(1)' | ./$(BUILD)/calc)" -eq $(2) ]; then \
+		echo "PASS"; 				\
+	else 						\
+		echo "FAIL - Expected: $(2), Actual: $(shell echo '$(1)' | ./$(BUILD)/calc)";	 \
+		exit 1; 				\
+	fi;
+endef
+
+
+test: TC1_INP := * 1 2
+test: TC1_OUT := 2
+test: TC2_INP := * 200000 200000
+test: TC2_OUT := 40000000000
+
+test:
+	@$(call test_case,$(TC1_INP),$(TC1_OUT))
+	@$(call test_case,$(TC2_INP),$(TC2_OUT))
